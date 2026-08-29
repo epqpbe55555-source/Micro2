@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Smart — Medical Microbiology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1622;
+    --bg-2:#0f1e2e;
+    --surface:#132639;
+    --surface-2:#1a3049;
+    --surface-3:#20395480;
+    --line:#28425f;
+    --ink:#eaf2f8;
+    --muted:#8fa7c0;
+    --muted-2:#5f7893;
+    --violet:#b497f0;
+    --violet-dim:#b497f02b;
+    --teal:#43d9c9;
+    --teal-dim:#43d9c92b;
+    --amber:#f5b759;
+    --amber-dim:#f5b7592b;
+    --good:#6ee7b7;
+    --bad:#f0725a;
+    --radius:14px;
+    --shadow: 0 10px 30px -12px rgba(0,0,0,0.55);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 90% -10%, #16324a55 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #2a1f4a44 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.55;
+  }
+  h1,h2,h3,h4{ font-family:'Fraunces',serif; margin:0; letter-spacing:-0.01em; }
+  .mono{ font-family:'IBM Plex Mono',monospace; letter-spacing:.06em; }
+  a{color:inherit;}
+  ::selection{ background:var(--amber-dim); }
+
+  /* focus visibility */
+  button:focus-visible, .tapline:focus-visible, .opt:focus-visible, .fc:focus-visible{
+    outline:2px solid var(--amber); outline-offset:2px;
+  }
+
+  /* ---------- Header ---------- */
+  header.top{
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(180deg, #0b1622ee 0%, #0b1622d8 70%, #0b162200 100%);
+    backdrop-filter: blur(10px);
+    padding:18px 18px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .colony{
+    width:34px; height:34px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #d7c2ff 0%, var(--violet) 38%, #6a4fb0 75%);
+    box-shadow: 0 0 0 3px #b497f01f, 0 0 18px 2px #b497f055;
+    position:relative; flex:none;
+    animation: pulse 4.5s ease-in-out infinite;
+  }
+  .colony::after{
+    content:""; position:absolute; inset:6px; border-radius:50%;
+    background: radial-gradient(circle at 40% 35%, #ffffff55, transparent 60%);
+  }
+  @keyframes pulse{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.08);} }
+  .brand-text h1{ font-size:22px; font-weight:800; }
+  .brand-text .sub{ font-size:10.5px; color:var(--muted); text-transform:uppercase; }
+
+  nav.tabs{
+    display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;
+    scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{ display:none; }
+  .tab{
+    flex:none;
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface); border:1px solid var(--line);
+    color:var(--muted); padding:9px 14px 9px 10px;
+    border-radius:999px; cursor:pointer; font-size:13.5px; font-weight:600;
+    transition:.18s ease;
+    white-space:nowrap;
+  }
+  .tab .num{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600;
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:var(--surface-2); color:var(--muted-2);
+  }
+  .tab.active{ color:var(--ink); border-color:var(--amber); background:var(--amber-dim); }
+  .tab.active .num{ background:var(--amber); color:#241605; }
+  .tab:hover{ color:var(--ink); }
+
+  main{ max-width:900px; margin:0 auto; padding:22px 16px 90px; }
+  section.panel{ display:none; animation:fade .35s ease; }
+  section.panel.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .panel-head{ margin-bottom:18px; }
+  .panel-head .eyebrow{ color:var(--teal); font-size:11px; text-transform:uppercase; }
+  .panel-head h2{ font-size:26px; margin-top:4px; }
+  .panel-head p.desc{ color:var(--muted); font-size:14px; margin-top:6px; max-width:56ch;}
+
+  /* ---------- Overview ---------- */
+  .grid-cards{ display:grid; grid-template-columns:1fr; gap:14px; }
+  @media(min-width:640px){ .grid-cards{ grid-template-columns:1fr 1fr; } }
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 16px 14px; box-shadow:var(--shadow);
+  }
+  .card h3{ font-size:16.5px; display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .dot{ width:8px; height:8px; border-radius:50%; flex:none; }
+  .dot.v{ background:var(--violet); } .dot.t{ background:var(--teal); } .dot.a{ background:var(--amber); }
+  .card ul{ margin:0; padding-left:18px; color:var(--muted); font-size:13.5px; }
+  .card li{ margin-bottom:6px; }
+  .card li b{ color:var(--ink); font-weight:600; }
+
+  /* ---------- Diagrams ---------- */
+  .diagram-block{ margin-bottom:30px; }
+  .diagram-block > h3{ font-size:17px; margin-bottom:4px; }
+  .diagram-block > .hint{ color:var(--muted-2); font-size:12.5px; margin-bottom:12px;}
+
+  .cells-wrap{ display:grid; grid-template-columns:1fr; gap:16px; }
+  @media(min-width:640px){ .cells-wrap{ grid-template-columns:1fr 1fr; } }
+  .cell-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px; }
+  .cell-card .lbl{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; display:flex; align-items:center; gap:7px;}
+  .cell-card.gp .lbl{ color:var(--violet); } .cell-card.gn .lbl{ color:var(--teal); }
+  .cell-stage{ position:relative; width:100%; aspect-ratio:4/3; border-radius:16px; overflow:hidden; }
+  .gp .cell-stage{ background:linear-gradient(160deg,#3a2e5c,#241a3d); }
+  .gn .cell-stage{ background:linear-gradient(160deg,#123f47,#0c2a30); }
+  .layer{ position:absolute; border-radius:50%; }
+  .gp .layer.wall{ inset:6%; background:#8a70c9aa; }
+  .gp .layer.mem{ inset:16%; background:#0f0a1f; border:2px solid #d7c2ff; }
+  .gp .layer.cyto{ inset:19%; background:#1c1430; }
+  .gn .layer.wall{ inset:6%; background:#2fb6ac66; }
+  .gn .layer.periplasm{ inset:13%; background:#0c2a3099; }
+  .gn .layer.mem{ inset:20%; background:#04191c; border:2px solid #7ff0e4; }
+  .gn .layer.cyto{ inset:23%; background:#08171a; }
+  .chromo{ position:absolute; left:50%; top:52%; width:46%; height:10%; transform:translate(-50%,-50%) rotate(-8deg);
+    border-radius:20px; background:repeating-linear-gradient(90deg,#e2665c 0 6px,#c74a41 6px 12px); opacity:.85; }
+  .ribo{ position:absolute; width:5px; height:5px; border-radius:50%; background:#ffe9a8; }
+  .hotspot{
+    position:absolute; width:22px; height:22px; margin:-11px 0 0 -11px;
+    border-radius:50%; border:2px solid #fff; background:var(--amber);
+    color:#241605; font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:0 0 0 4px #f5b75930; transition:.15s;
+  }
+  .hotspot:hover, .hotspot.on{ background:#fff; transform:scale(1.12); }
+  .legend-list{ margin-top:12px; display:flex; flex-wrap:wrap; gap:6px; }
+  .legend-pill{
+    font-size:11.5px; padding:5px 9px; border-radius:999px; background:var(--surface-2);
+    border:1px solid var(--line); color:var(--muted); cursor:pointer; display:flex; gap:6px; align-items:center;
+  }
+  .legend-pill .n{ font-family:'IBM Plex Mono',monospace; font-size:9.5px; background:var(--surface-3); border-radius:50%; width:15px; height:15px; display:flex; align-items:center; justify-content:center;}
+  .legend-pill.on{ color:var(--ink); border-color:var(--amber); }
+  .info-box{
+    margin-top:14px; background:var(--surface-2); border-left:3px solid var(--amber);
+    border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--ink); min-height:20px;
+  }
+  .info-box .k{ color:var(--amber); font-weight:700; font-size:12px; text-transform:uppercase; display:block; margin-bottom:3px; letter-spacing:.04em;}
+
+  .filter-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .chip{ padding:7px 12px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font-size:12.5px; cursor:pointer; font-weight:600;}
+  .chip.on{ color:#0b1622; background:var(--teal); border-color:var(--teal); }
+
+  table.wallt{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.wallt th{ text-align:left; color:var(--muted-2); font-size:11px; text-transform:uppercase; padding:8px 8px; border-bottom:1px solid var(--line);}
+  table.wallt td{ padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.wallt tr.hide{ display:none; }
+  table.wallt td.type{ color:var(--amber); font-weight:700; white-space:nowrap; }
+  table.wallt td.struct{ color:var(--ink); font-weight:600; white-space:nowrap;}
+  table.wallt td.func{ color:var(--muted); }
+
+  .cmp-toggle{ display:flex; gap:8px; margin-bottom:10px;}
+  .cmp-btn{ flex:1; padding:9px; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font-weight:700; font-size:12.5px; cursor:pointer;}
+  .cmp-btn[data-side="gp"].on{ border-color:var(--violet); color:var(--violet); background:var(--violet-dim);}
+  .cmp-btn[data-side="gn"].on{ border-color:var(--teal); color:var(--teal); background:var(--teal-dim);}
+  table.cmpt{ width:100%; border-collapse:collapse; font-size:12.8px;}
+  table.cmpt th, table.cmpt td{ padding:9px 6px; border-bottom:1px solid var(--line); text-align:left;}
+  table.cmpt th{ color:var(--muted-2); font-size:10.5px; text-transform:uppercase;}
+  table.cmpt td.gpv{ transition:.15s; } table.cmpt td.gnv{ transition:.15s; }
+  table.cmpt.show-gp td.gpv{ color:var(--violet); font-weight:700; background:var(--violet-dim); }
+  table.cmpt.show-gn td.gnv{ color:var(--teal); font-weight:700; background:var(--teal-dim); }
+
+  .curve-wrap{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px; }
+  svg.curve{ width:100%; height:auto; display:block; }
+  .phase-seg{ cursor:pointer; transition:.15s; }
+  .phase-seg:hover, .phase-seg.on{ filter:brightness(1.5); }
+  .phase-btns{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:12px;}
+  .phase-btn{ padding:8px 4px; border-radius:9px; border:1px solid var(--line); background:var(--surface-2); color:var(--muted); font-size:11.5px; font-weight:700; cursor:pointer;}
+  .phase-btn.on{ color:#0b1622; }
+  .phase-btn[data-p="lag"].on{ background:#8fa7c0; }
+  .phase-btn[data-p="log"].on{ background:var(--teal); }
+  .phase-btn[data-p="stat"].on{ background:var(--amber); }
+  .phase-btn[data-p="death"].on{ background:var(--bad); }
+
+  .transfer-grid{ display:grid; grid-template-columns:1fr; gap:12px;}
+  @media(min-width:640px){ .transfer-grid{ grid-template-columns:1fr 1fr 1fr; } }
+  .tcard{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px; cursor:pointer;}
+  .tcard .ic{ width:36px; height:36px; border-radius:10px; background:var(--teal-dim); display:flex; align-items:center; justify-content:center; margin-bottom:10px;}
+  .tcard .ic svg{ width:18px; height:18px; }
+  .tcard h4{ font-size:15px; margin-bottom:4px;}
+  .tcard p{ font-size:12.5px; color:var(--muted); margin:0; max-height:0; overflow:hidden; transition:.25s ease;}
+  .tcard.open p{ max-height:120px; margin-top:6px; }
+  .tcard .arrow{ float:right; color:var(--muted-2); font-size:12px; }
+
+  /* ---------- Mini map ---------- */
+  .map-wrap{ display:grid; grid-template-columns:1fr; gap:14px; }
+  .map-nodes{ display:flex; flex-direction:column; gap:8px; }
+  .node-btn{
+    text-align:left; width:100%; padding:12px 14px; border-radius:12px;
+    background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--muted-2);
+    color:var(--ink); font-size:14px; font-weight:700; cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+    font-family:'Fraunces',serif;
+  }
+  .node-btn small{ display:block; font-family:'Inter',sans-serif; font-weight:400; color:var(--muted); font-size:11.5px; margin-top:2px;}
+  .node-btn .go{ color:var(--muted-2); font-family:'IBM Plex Mono',monospace; font-size:16px; }
+  .node-btn.on{ border-left-color:var(--amber); background:var(--amber-dim); }
+  .node-btn.on .go{ color:var(--amber); }
+  .map-panel{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px; min-height:180px; position:sticky; top:170px;
+  }
+  .map-panel .tag{ color:var(--amber); font-size:11px; text-transform:uppercase; margin-bottom:8px; display:block;}
+  .map-panel h4{ font-size:18px; margin-bottom:10px; }
+  .map-panel ul{ padding-left:18px; margin:0; color:var(--ink); font-size:13.5px; }
+  .map-panel li{ margin-bottom:7px; color:var(--muted); }
+  .map-panel li b{ color:var(--ink); }
+  .map-panel .empty{ color:var(--muted-2); font-size:13.5px; }
+
+  /* ---------- Flashcards ---------- */
+  .fc-controls{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .fc-controls .count{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted-2);}
+  .fc-btn{ padding:8px 14px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--ink); font-size:12.5px; font-weight:700; cursor:pointer;}
+  .fc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media(min-width:640px){ .fc-grid{ grid-template-columns:1fr 1fr 1fr; } }
+  .fc{ perspective:1000px; height:130px; cursor:pointer; }
+  .fc-inner{ position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .fc.flip .fc-inner{ transform:rotateY(180deg); }
+  .fc-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:12px;
+    display:flex; align-items:center; justify-content:center; text-align:center; padding:10px;
+    font-size:12.5px; border:1px solid var(--line);
+  }
+  .fc-front{ background:var(--surface); color:var(--ink); font-weight:700; font-family:'Fraunces',serif; font-size:14px;}
+  .fc-back{ background:var(--surface-2); color:var(--muted); transform:rotateY(180deg); font-size:11.8px; }
+
+  /* ---------- Quiz ---------- */
+  .quiz-top{ display:flex; justify-content:space-between; align-items:center; position:sticky; top:98px; z-index:5;
+    background:var(--bg-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin-bottom:16px;}
+  .score{ font-family:'IBM Plex Mono',monospace; font-size:13px; }
+  .score b{ color:var(--good); }
+  .reset-btn{ background:none; border:1px solid var(--line); color:var(--muted); padding:6px 12px; border-radius:999px; font-size:11.5px; cursor:pointer; font-weight:700;}
+  .qcard{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:12px;}
+  .qcard .qn{ font-family:'IBM Plex Mono',monospace; color:var(--muted-2); font-size:11px; margin-bottom:6px; }
+  .qcard .qtext{ font-size:14.5px; font-weight:600; margin-bottom:12px; }
+  .opt{
+    display:block; width:100%; text-align:left; padding:10px 12px; margin-bottom:7px;
+    border-radius:9px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink);
+    font-size:13.2px; cursor:pointer; transition:.15s;
+  }
+  .opt:hover{ border-color:var(--muted-2); }
+  .opt.correct{ border-color:var(--good); background:#6ee7b71f; color:var(--good); font-weight:700;}
+  .opt.wrong{ border-color:var(--bad); background:#f0725a1f; color:var(--bad); font-weight:700;}
+  .opt.disabled{ pointer-events:none; opacity:.85; }
+
+  footer.foot{ text-align:center; padding:22px 16px 30px; color:var(--muted-2); font-size:11.5px; border-top:1px solid var(--line); margin-top:20px;}
+  footer.foot .mono{ display:block; margin-top:4px; font-size:10.5px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="colony"></div>
+    <div class="brand-text">
+      <h1>Study Smart</h1>
+      <div class="sub mono">Medical Microbiology · Lec. 2 · Bacterial Structure &amp; Growth</div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-target="overview"><span class="num">01</span> Overview</button>
+    <button class="tab" data-target="diagrams"><span class="num">02</span> Diagrams</button>
+    <button class="tab" data-target="minimap"><span class="num">03</span> Mini Map</button>
+    <button class="tab" data-target="flashcards"><span class="num">04</span> Flash Cards</button>
+    <button class="tab" data-target="quiz"><span class="num">05</span> Quiz Bank</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- 1. OVERVIEW -->
+  <section class="panel active" id="overview">
+    <div class="panel-head">
+      <span class="eyebrow mono">01 / Core rules</span>
+      <h2>The whole lecture, in the facts that matter</h2>
+      <p class="desc">No paragraphs to re-read — just the rules and numbers examiners actually ask about.</p>
+    </div>
+    <div class="grid-cards">
+      <div class="card">
+        <h3><span class="dot v"></span>Cell Envelope</h3>
+        <ul>
+          <li>Cytoplasm → wrapped by the <b>cytoplasmic membrane</b> → wrapped by the <b>cell wall</b> (peptidoglycan).</li>
+          <li><b>Gram-positive:</b> thick peptidoglycan, no outer membrane.</li>
+          <li><b>Gram-negative:</b> thin peptidoglycan + periplasmic space + outer membrane.</li>
+          <li><b>Capsule</b> (when present) = anti-phagocytic, found in some species of both types.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="dot t"></span>Cytoplasmic Content</h3>
+        <ul>
+          <li>Most bacterial chromosomes: <b>single, circular, double-stranded DNA</b>.</li>
+          <li><b>Plasmids</b> = smaller extra-chromosomal circular DNA; not essential, but often carry <b>antibiotic resistance</b>.</li>
+          <li>Cytoplasm also holds mRNA, ribosomes, and proteins.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="dot a"></span>Reproduction</h3>
+        <ul>
+          <li><b>Asexual — Binary fission:</b> no spindle fiber; cell doubles, replicates chromosome, wall forms a septum → 2 daughter cells.</li>
+          <li><b>Asexual — Budding:</b> a few bacteria &amp; yeasts; bubble-like growth separates from parent.</li>
+          <li><b>Gene transfer — Conjugation:</b> cell-to-cell contact via sex pili.</li>
+          <li><b>Gene transfer — Transformation:</b> uptake of free DNA from the medium.</li>
+          <li><b>Gene transfer — Transduction:</b> gene transfer via a virus.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="dot v"></span>Growth Curve — 4 Phases</h3>
+        <ul>
+          <li><b>Lag:</b> no rise in numbers; high metabolic prep activity.</li>
+          <li><b>Log (exponential):</b> rapid doubling each generation time.</li>
+          <li><b>Stationary:</b> numbers plateau; cells shrink; triggered by overcrowding, waste build-up, nutrient/O₂ loss.</li>
+          <li><b>Death:</b> slow die-off, caused by loss of intracellular ATP.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="dot t"></span>Physical Growth Factors</h3>
+        <ul>
+          <li><b>pH:</b> Acidophiles 1–5.4 (e.g. Lactobacillus) · Neutrophiles 5.4–8.5 (most pathogens) · Alkaliphiles 7.0–11.5 (e.g. V. cholerae).</li>
+          <li><b>Temp:</b> Psychrophiles 15–20°C · Mesophiles 25–40°C (body 37°C) · Thermophiles 50–60°C · Hyperthermophiles &gt;80°C.</li>
+          <li><b>O₂:</b> Obligate aerobe (M. tuberculosis) · Facultative anaerobe (E. coli) · Obligate anaerobe (N. meningitidis) · Microaerophilic (Campylobacter).</li>
+          <li>Only <b>spores</b> survive a dry environment; UV/gamma rays mutate or kill cells.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="dot a"></span>Chemical Growth Factors</h3>
+        <ul>
+          <li>O₂ &amp; H₂ come from water — essential for growth.</li>
+          <li><b>Autotrophs:</b> carbon from CO₂ · <b>Heterotrophs:</b> carbon from organic sugars.</li>
+          <li>Inorganic ions needed: N, S, P, Mg, K + trace elements.</li>
+          <li>Organic needs: carbohydrates (energy), amino acids, trace vitamins/purines/pyrimidines.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. DIAGRAMS -->
+  <section class="panel" id="diagrams">
+    <div class="panel-head">
+      <span class="eyebrow mono">02 / Tap to explore</span>
+      <h2>Every figure, made clickable</h2>
+      <p class="desc">Tap a marker, a legend pill, a table row, or a curve segment to pull up its explanation.</p>
+    </div>
+
+    <!-- Gram cell diagram -->
+    <div class="diagram-block">
+      <h3>Gram-positive vs Gram-negative cell</h3>
+      <div class="hint">Tap a numbered marker on either cell.</div>
+      <div class="cells-wrap">
+        <div class="cell-card gp">
+          <div class="lbl"><span class="dot v"></span>Gram-positive</div>
+          <div class="cell-stage" id="stage-gp">
+            <div class="layer wall"></div>
+            <div class="layer mem"></div>
+            <div class="layer cyto"></div>
+            <div class="chromo"></div>
+          </div>
+          <div class="legend-list" id="legend-gp"></div>
+        </div>
+        <div class="cell-card gn">
+          <div class="lbl"><span class="dot t"></span>Gram-negative</div>
+          <div class="cell-stage" id="stage-gn">
+            <div class="layer wall"></div>
+            <div class="layer periplasm"></div>
+            <div class="layer mem"></div>
+            <div class="layer cyto"></div>
+            <div class="chromo"></div>
+          </div>
+          <div class="legend-list" id="legend-gn"></div>
+        </div>
+      </div>
+      <div class="info-box" id="cell-info"><span class="k">Tip</span>Tap any marker or pill above to see what it does.</div>
+    </div>
+
+    <!-- Cell wall structures table -->
+    <div class="diagram-block">
+      <h3>Cell wall structures &amp; functions</h3>
+      <div class="hint">Filter by group.</div>
+      <div class="filter-row" id="wall-filters">
+        <button class="chip on" data-f="all">All</button>
+        <button class="chip" data-f="Gram Positive">Gram Positive</button>
+        <button class="chip" data-f="Gram Negative">Gram Negative</button>
+        <button class="chip" data-f="Other Structures">Other</button>
+      </div>
+      <table class="wallt" id="wall-table">
+        <thead><tr><th>Type</th><th>Structure</th><th>Function</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Comparison table -->
+    <div class="diagram-block">
+      <h3>Gram-positive vs Gram-negative — comparison</h3>
+      <div class="hint">Highlight one side to compare fast.</div>
+      <div class="cmp-toggle">
+        <button class="cmp-btn on" data-side="gp">Highlight Gram +</button>
+        <button class="cmp-btn on" data-side="gn">Highlight Gram −</button>
+      </div>
+      <table class="cmpt show-gp show-gn" id="cmp-table">
+        <thead><tr><th>Characteristic</th><th>Gram +</th><th>Gram −</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Growth curve -->
+    <div class="diagram-block">
+      <h3>Standard bacterial growth curve</h3>
+      <div class="hint">Tap a phase on the curve or the buttons below.</div>
+      <div class="curve-wrap">
+        <svg class="curve" viewBox="0 0 400 180" preserveAspectRatio="none">
+          <line x1="20" y1="160" x2="390" y2="160" stroke="#28425f" stroke-width="1.5"/>
+          <line x1="20" y1="160" x2="20" y2="10" stroke="#28425f" stroke-width="1.5"/>
+          <path class="phase-seg" data-p="lag" d="M20,150 C 50,150 70,150 95,148" fill="none" stroke="#8fa7c0" stroke-width="6" stroke-linecap="round"/>
+          <path class="phase-seg" data-p="log" d="M95,148 C 140,140 150,30 210,25" fill="none" stroke="#43d9c9" stroke-width="6" stroke-linecap="round"/>
+          <path class="phase-seg" data-p="stat" d="M210,25 C 250,22 290,22 310,23" fill="none" stroke="#f5b759" stroke-width="6" stroke-linecap="round"/>
+          <path class="phase-seg" data-p="death" d="M310,23 C 340,25 360,60 385,100" fill="none" stroke="#f0725a" stroke-width="6" stroke-linecap="round"/>
+        </svg>
+        <div class="phase-btns" id="phase-btns">
+          <button class="phase-btn" data-p="lag">Lag</button>
+          <button class="phase-btn" data-p="log">Log</button>
+          <button class="phase-btn" data-p="stat">Stationary</button>
+          <button class="phase-btn" data-p="death">Death</button>
+        </div>
+        <div class="info-box" id="phase-info"><span class="k">Tip</span>Tap a phase to read what happens to the cells.</div>
+      </div>
+    </div>
+
+    <!-- Gene transfer -->
+    <div class="diagram-block">
+      <h3>Sexual-style gene transfer</h3>
+      <div class="hint">Tap a card to reveal how it works.</div>
+      <div class="transfer-grid" id="transfer-grid"></div>
+    </div>
+  </section>
+
+  <!-- 3. MINI MAP -->
+  <section class="panel" id="minimap">
+    <div class="panel-head">
+      <span class="eyebrow mono">03 / Jump around</span>
+      <h2>Mini map</h2>
+      <p class="desc">Tap any topic — its summary opens in the panel on this screen.</p>
+    </div>
+    <div class="map-wrap">
+      <div class="map-nodes" id="map-nodes"></div>
+      <div class="map-panel" id="map-panel">
+        <span class="empty">Select a topic above to open it here.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. FLASHCARDS -->
+  <section class="panel" id="flashcards">
+    <div class="panel-head">
+      <span class="eyebrow mono">04 / Term drills</span>
+      <h2>Flash cards</h2>
+      <p class="desc">Tap a card to flip it. Every key term from the lecture is here.</p>
+    </div>
+    <div class="fc-controls">
+      <span class="count mono" id="fc-count">0 / 0 flipped</span>
+      <button class="fc-btn" id="fc-reset">Flip all back</button>
+    </div>
+    <div class="fc-grid" id="fc-grid"></div>
+  </section>
+
+  <!-- 5. QUIZ -->
+  <section class="panel" id="quiz">
+    <div class="panel-head">
+      <span class="eyebrow mono">05 / Test yourself</span>
+      <h2>Quiz bank</h2>
+      <p class="desc">Answer choices are shuffled — the correct one moves every time you reset.</p>
+    </div>
+    <div class="quiz-top">
+      <div class="score mono">Score: <b id="score-val">0</b> / <span id="score-total">0</span></div>
+      <button class="reset-btn" id="quiz-reset">Reset &amp; reshuffle</button>
+    </div>
+    <div id="quiz-list"></div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  © Anmar Taha — All Rights Reserved.
+  <span class="mono">Study Smart · Medical Microbiology, Lec. 2</span>
+</footer>
+
+<script>
+/* ===================== NAV ===================== */
+const tabs = document.querySelectorAll('.tab');
+const panels = document.querySelectorAll('.panel');
+tabs.forEach(t=>{
+  t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.target).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ===================== DIAGRAM 1: GRAM CELLS ===================== */
+const gpSpots = [
+  {n:1,x:50,y:9,  label:"Capsule", text:"Outer sugar layer around some bacteria. Function: anti-phagocytic — helps the cell evade immune engulfment."},
+  {n:2,x:14,y:22, label:"Peptidoglycan (thick)", text:"Thick peptidoglycan wall in Gram-positive cells. Gives cell shape/structure and protects against the environment and complement killing."},
+  {n:3,x:22,y:35, label:"Cytoplasmic membrane", text:"Inner membrane wrapping the cytoplasm; site of transport and energy-generating reactions."},
+  {n:4,x:70,y:60, label:"Ribosome", text:"Small cytoplasmic granules that translate mRNA into protein."},
+  {n:5,x:45,y:55, label:"Chromosome", text:"Single, circular, double-stranded DNA molecule carrying the genome."},
+  {n:6,x:85,y:30, label:"Surface proteins", text:"Gram-positive surface proteins involved in immune evasion, adhesion, etc."},
+  {n:7,x:8,y:88,  label:"Flagellum", text:"Whip-like appendage used for movement (motility) and chemotaxis."}
+];
+const gnSpots = [
+  {n:1,x:52,y:6,  label:"Capsule", text:"Outer layer surrounding some Gram-negative cells; anti-phagocytic."},
+  {n:2,x:25,y:14, label:"Pili", text:"Hair-like surface filaments; used for adherence, and in conjugation as 'sex pili'."},
+  {n:3,x:14,y:26, label:"Outer membrane", text:"Extra membrane unique to Gram-negative cells; provides structure and protects from the host environment; contains LPS."},
+  {n:4,x:20,y:38, label:"Peptidoglycan (thin)", text:"Thin peptidoglycan layer sandwiched in the periplasmic space; gives cell shape and structure."},
+  {n:5,x:30,y:48, label:"Periplasmic space", text:"Space between outer membrane and cytoplasmic membrane holding enzymes for transport, degradation, and synthesis."},
+  {n:6,x:82,y:20, label:"Porin proteins", text:"Channel proteins in the outer membrane that let small molecules pass through."},
+  {n:7,x:38,y:60, label:"Cytoplasmic membrane", text:"Inner membrane wrapping the cytoplasm; site of transport and energy-generating reactions."},
+  {n:8,x:70,y:65, label:"Ribosome", text:"Small cytoplasmic granules that translate mRNA into protein."},
+  {n:9,x:50,y:55, label:"Chromosome", text:"Single, circular, double-stranded DNA molecule carrying the genome."},
+  {n:10,x:8,y:88, label:"Flagellum", text:"Whip-like appendage used for movement (motility) and chemotaxis."}
+];
+
+function buildCell(stageId, legendId, spots, side){
+  const stage = document.getElementById(stageId);
+  const legend = document.getElementById(legendId);
+  spots.forEach(s=>{
+    const dotEl = document.createElement('div');
+    dotEl.className='hotspot';
+    dotEl.style.left = s.x+'%';
+    dotEl.style.top = s.y+'%';
+    dotEl.textContent = s.n;
+    dotEl.addEventListener('click',()=>selectSpot(side,s.n));
+    stage.appendChild(dotEl);
+
+    const pill = document.createElement('div');
+    pill.className='legend-pill';
+    pill.innerHTML = `<span class="n">${s.n}</span>${s.label}`;
+    pill.addEventListener('click',()=>selectSpot(side,s.n));
+    legend.appendChild(pill);
+  });
+}
+buildCell('stage-gp','legend-gp',gpSpots,'gp');
+buildCell('stage-gn','legend-gn',gnSpots,'gn');
+
+function selectSpot(side,n){
+  const data = side==='gp' ? gpSpots : gnSpots;
+  const item = data.find(s=>s.n===n);
+  document.querySelectorAll(`#stage-${side} .hotspot`).forEach((el,i)=>el.classList.toggle('on', data[i].n===n));
+  document.querySelectorAll(`#legend-${side} .legend-pill`).forEach((el,i)=>el.classList.toggle('on', data[i].n===n));
+  document.getElementById('cell-info').innerHTML = `<span class="k">${side==='gp'?'Gram-positive':'Gram-negative'} · ${item.label}</span>${item.text}`;
+}
+
+/* ===================== DIAGRAM 2: WALL TABLE ===================== */
+const wallData = [
+  {type:"Gram Positive", struct:"Peptidoglycan", func:"Cell shape and structure; protection from environment and complement killing"},
+  {type:"Gram Positive", struct:"Lipoteichoic acid", func:"Activator of innate host protections"},
+  {type:"Gram Positive", struct:"Proteins", func:"Immune evasion, adhesion, etc."},
+  {type:"Gram Negative", struct:"Peptidoglycan", func:"Cell shape and structure"},
+  {type:"Gram Negative", struct:"Periplasmic space", func:"Enzymes involved in transport, degradation, and synthesis"},
+  {type:"Gram Negative", struct:"Outer membrane proteins", func:"Cell structure; protection from host environment"},
+  {type:"Gram Negative", struct:"LPS", func:"Outer membrane structure; barrier protection"},
+  {type:"Other Structures", struct:"Capsule", func:"Anti-phagocytic"},
+  {type:"Other Structures", struct:"Biofilm", func:"Protection of colony from environment and antimicrobials"},
+  {type:"Other Structures", struct:"Pili", func:"Adherence, sex pili"},
+  {type:"Other Structures", struct:"Flagellum", func:"Movement, chemotaxis"}
+];
+const wallBody = document.querySelector('#wall-table tbody');
+wallData.forEach(r=>{
+  const tr = document.createElement('tr');
+  tr.dataset.type = r.type;
+  tr.innerHTML = `<td class="type">${r.type}</td><td class="struct">${r.struct}</td><td class="func">${r.func}</td>`;
+  wallBody.appendChild(tr);
+});
+document.querySelectorAll('#wall-filters .chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    document.querySelectorAll('#wall-filters .chip').forEach(c=>c.classList.remove('on'));
+    chip.classList.add('on');
+    const f = chip.dataset.f;
+    document.querySelectorAll('#wall-table tbody tr').forEach(tr=>{
+      tr.classList.toggle('hide', f!=='all' && tr.dataset.type!==f);
+    });
+  });
+});
+
+/* ===================== DIAGRAM 3: COMPARISON TABLE ===================== */
+const cmpData = [
+  ["Outer membrane","—","+"],
+  ["Peptidoglycan","Thick","Thin"],
+  ["Lipopolysaccharide","—","+"],
+  ["Endotoxin","—","+"],
+  ["Sporulation","Some bacteria","—"],
+  ["Capsule","Sometimes present","Sometimes present"],
+  ["Lysozyme","Sensitive","Resistant"],
+  ["Antibacterial activity of penicillin","More susceptible","More resistant"],
+  ["Susceptibility to drying/disruption","Less","More"],
+  ["Exotoxin production","Some strains","Some strains"]
+];
+const cmpBody = document.querySelector('#cmp-table tbody');
+cmpData.forEach(r=>{
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${r[0]}</td><td class="gpv">${r[1]}</td><td class="gnv">${r[2]}</td>`;
+  cmpBody.appendChild(tr);
+});
+document.querySelectorAll('.cmp-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    btn.classList.toggle('on');
+    const table = document.getElementById('cmp-table');
+    table.classList.toggle('show-gp', document.querySelector('.cmp-btn[data-side="gp"]').classList.contains('on'));
+    table.classList.toggle('show-gn', document.querySelector('.cmp-btn[data-side="gn"]').classList.contains('on'));
+  });
+});
+
+/* ===================== DIAGRAM 4: GROWTH CURVE ===================== */
+const phaseInfo = {
+  lag:{name:"Lag phase", text:"Cell number does not increase, but great metabolic activity occurs as cells prepare to grow."},
+  log:{name:"Log (exponential) phase", text:"Cell numbers increase during each generation time — slowly at first, then very rapidly. Growth is limited eventually by nutrient depletion, waste build-up, and oxygen loss."},
+  stat:{name:"Stationary phase", text:"Cell number stops increasing, but cells change — they shrink and synthesize survival components. Triggered by overcrowding, waste accumulation, and nutrient loss."},
+  death:{name:"Death phase", text:"Cells begin to die, but at a low rate, mainly due to loss of intracellular ATP."}
+};
+function selectPhase(p){
+  document.querySelectorAll('.phase-seg').forEach(s=>s.classList.toggle('on', s.dataset.p===p));
+  document.querySelectorAll('.phase-btn').forEach(b=>b.classList.toggle('on', b.dataset.p===p));
+  const info = phaseInfo[p];
+  document.getElementById('phase-info').innerHTML = `<span class="k">${info.name}</span>${info.text}`;
+}
+document.querySelectorAll('.phase-seg').forEach(seg=>seg.addEventListener('click',()=>selectPhase(seg.dataset.p)));
+document.querySelectorAll('.phase-btn').forEach(btn=>btn.addEventListener('click',()=>selectPhase(btn.dataset.p)));
+
+/* ===================== DIAGRAM 5: GENE TRANSFER ===================== */
+const transferData = [
+  {title:"Conjugation", text:"Transfer of genetic material between bacteria by direct cell-to-cell contact through sex pili."},
+  {title:"Transformation", text:"Absorption of a free DNA segment from the surrounding medium by a living bacterium."},
+  {title:"Transduction", text:"Transfer of foreign genes between bacteria by means of a virus (bacteriophage)."}
+];
+const tGrid = document.getElementById('transfer-grid');
+transferData.forEach(t=>{
+  const card = document.createElement('div');
+  card.className='tcard';
+  card.innerHTML = `<span class="arrow">＋</span><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#43d9c9" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M7 12h10"/></svg></div><h4>${t.title}</h4><p>${t.text}</p>`;
+  card.addEventListener('click',()=>{
+    const wasOpen = card.classList.contains('open');
+    document.querySelectorAll('.tcard').forEach(c=>{c.classList.remove('open'); c.querySelector('.arrow').textContent='＋';});
+    if(!wasOpen){ card.classList.add('open'); card.querySelector('.arrow').textContent='－'; }
+  });
+  tGrid.appendChild(card);
+});
+
+/* ===================== MINI MAP ===================== */
+const mapData = [
+  {title:"Cell Envelope", sub:"Wall, membrane, capsule", body:[
+    "Cytoplasm is wrapped by the <b>cytoplasmic membrane</b>, then the <b>peptidoglycan cell wall</b>.",
+    "<b>Gram-positive:</b> thick peptidoglycan, no outer membrane.",
+    "<b>Gram-negative:</b> thin peptidoglycan + periplasmic space + outer membrane.",
+    "A <b>capsule</b>, when present, is anti-phagocytic."
+  ]},
+  {title:"Cytoplasmic Content", sub:"Chromosome, plasmids, ribosomes", body:[
+    "Most bacterial chromosomes are a <b>single, circular, double-stranded DNA</b>.",
+    "<b>Plasmids</b> are smaller extra-chromosomal circular DNAs — not essential, but often carry <b>antibiotic resistance</b>.",
+    "Cytoplasm also contains mRNA, ribosomes, and proteins."
+  ]},
+  {title:"Asexual Reproduction", sub:"Binary fission & budding", body:[
+    "<b>Binary fission:</b> simple division with no spindle fiber apparatus — the cell doubles in size, replicates its chromosome, then a wall/septum forms two daughter cells.",
+    "<b>Budding:</b> a few bacteria and some eukaryotes (yeasts) form a bubble-like growth that separates from the parent cell."
+  ]},
+  {title:"Gene Transfer", sub:"Conjugation · transformation · transduction", body:[
+    "<b>Conjugation:</b> transfer of genetic material by cell-to-cell contact via sex pili.",
+    "<b>Transformation:</b> absorption of a free DNA segment from the surrounding medium.",
+    "<b>Transduction:</b> transfer of foreign genes by means of a virus."
+  ]},
+  {title:"Growth Curve", sub:"Lag → log → stationary → death", body:[
+    "<b>Lag:</b> no rise in numbers; high metabolic prep activity.",
+    "<b>Log:</b> exponential increase each generation time, until nutrients/oxygen run low and waste builds up.",
+    "<b>Stationary:</b> number plateaus; cells shrink and synthesize survival components; triggered by overcrowding.",
+    "<b>Death:</b> slow die-off from loss of intracellular ATP."
+  ]},
+  {title:"Physical Factors", sub:"pH · temperature · oxygen · moisture · radiation", body:[
+    "<b>pH:</b> Acidophiles 1–5.4 (Lactobacillus) · Neutrophiles 5.4–8.5 (most pathogens) · Alkaliphiles 7.0–11.5 (V. cholerae).",
+    "<b>Temperature:</b> Psychrophiles 15–20°C · Mesophiles 25–40°C · Thermophiles 50–60°C · Hyperthermophiles &gt;80°C.",
+    "<b>Oxygen:</b> Obligate aerobe · Facultative anaerobe · Obligate anaerobe · Microaerophilic.",
+    "Only <b>spores</b> tolerate dry conditions; UV/gamma radiation mutate or kill cells."
+  ]},
+  {title:"Chemical Factors", sub:"Carbon source, ions, organic nutrients", body:[
+    "O₂ and H₂ are obtained from water — essential for growth.",
+    "<b>Autotrophs</b> use CO₂ as carbon source; <b>heterotrophs</b> use organic sugars.",
+    "Inorganic ions needed: nitrogen, sulphur, phosphate, magnesium, potassium + trace elements.",
+    "Organic nutrients: carbohydrates (energy), amino acids, and trace vitamins/purines/pyrimidines."
+  ]}
+];
+const mapNodes = document.getElementById('map-nodes');
+const mapPanel = document.getElementById('map-panel');
+mapData.forEach((m,idx)=>{
+  const btn = document.createElement('button');
+  btn.className='node-btn';
+  btn.innerHTML = `<span>${m.title}<small>${m.sub}</small></span><span class="go">›</span>`;
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.node-btn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    mapPanel.innerHTML = `<span class="tag">${m.title}</span><h4>${m.sub}</h4><ul>${m.body.map(b=>`<li>${b}</li>`).join('')}</ul>`;
+  });
+  mapNodes.appendChild(btn);
+});
+
+/* ===================== FLASHCARDS ===================== */
+const fcData = [
+  ["Peptidoglycan","Wall polymer giving bacterial cell shape/structure; thick in Gram+, thin in Gram−."],
+  ["Capsule","Outer layer around some bacteria; function is anti-phagocytic."],
+  ["Plasmid","Small extra-chromosomal circular DNA; not essential, often carries antibiotic resistance."],
+  ["Bacterial chromosome","Single, circular, double-stranded DNA molecule."],
+  ["Ribosome","Cytoplasmic particle that translates mRNA into protein."],
+  ["Outer membrane","Extra membrane found only in Gram-negative bacteria; holds LPS and porins."],
+  ["Periplasmic space","Space (Gram-negative only) between outer & cytoplasmic membranes with transport/degradation enzymes."],
+  ["Pili","Surface filaments for adherence; 'sex pili' used in conjugation."],
+  ["Flagellum","Whip-like structure for movement and chemotaxis."],
+  ["Biofilm","Protects a bacterial colony from the environment and antimicrobials."],
+  ["LPS (lipopolysaccharide)","Outer-membrane component of Gram-negative cells; barrier protection, source of endotoxin."],
+  ["Lipoteichoic acid","Gram-positive cell wall component that activates innate host defenses."],
+  ["Binary fission","Asexual division with no spindle fiber; cell doubles, replicates DNA, forms a septum."],
+  ["Budding","A bubble-like growth forms and separates from the parent cell (some bacteria & yeasts)."],
+  ["Conjugation","Gene transfer via direct cell-to-cell contact through sex pili."],
+  ["Transformation","Uptake of free DNA from the surrounding medium."],
+  ["Transduction","Gene transfer between bacteria by means of a virus."],
+  ["Lag phase","No increase in cell number; high metabolic prep activity."],
+  ["Log phase","Exponential increase in cell number each generation time."],
+  ["Stationary phase","Cell number plateaus; cells shrink and adapt for survival."],
+  ["Death phase","Slow die-off caused by loss of intracellular ATP."],
+  ["Acidophiles","Bacteria that grow best at pH 1–5.4, e.g. Lactobacillus."],
+  ["Neutrophiles","Bacteria that grow best at pH 5.4–8.5; most human pathogens."],
+  ["Alkaliphiles","Bacteria that grow best at pH 7.0–11.5, e.g. Vibrio cholerae."],
+  ["Psychrophiles","Cold-loving bacteria, optimum 15–20°C (some grow at 0°C)."],
+  ["Mesophiles","Bacteria growing best at 25–40°C; human pathogens fall here (body = 37°C)."],
+  ["Thermophiles","Heat-loving bacteria, optimum 50–60°C, found in hot springs."],
+  ["Hyperthermophiles","Bacteria with optimum temperature above 80°C."],
+  ["Obligate aerobe","Requires oxygen to generate ATP, e.g. Mycobacterium tuberculosis."],
+  ["Facultative anaerobe","Uses oxygen if present, ferments if absent, e.g. E. coli."],
+  ["Obligate anaerobe","Cannot grow in presence of oxygen, e.g. Neisseria meningitidis."],
+  ["Microaerophilic","Grows best at low oxygen concentration, e.g. Campylobacter."],
+  ["Autotrophs","Free-living bacteria that use CO₂ as their carbon source."],
+  ["Heterotrophs","Parasitic bacteria that use organic substances (sugars) for carbon and energy."]
+];
+const fcGrid = document.getElementById('fc-grid');
+let flippedCount = 0;
+fcData.forEach(([front,back])=>{
+  const card = document.createElement('div');
+  card.className='fc';
+  card.innerHTML = `<div class="fc-inner">
+      <div class="fc-face fc-front">${front}</div>
+      <div class="fc-face fc-back">${back}</div>
+    </div>`;
+  card.addEventListener('click',()=>{
+    card.classList.toggle('flip');
+    flippedCount = document.querySelectorAll('.fc.flip').length;
+    document.getElementById('fc-count').textContent = `${flippedCount} / ${fcData.length} flipped`;
+  });
+  fcGrid.appendChild(card);
+});
+document.getElementById('fc-count').textContent = `0 / ${fcData.length} flipped`;
+document.getElementById('fc-reset').addEventListener('click',()=>{
+  document.querySelectorAll('.fc').forEach(c=>c.classList.remove('flip'));
+  document.getElementById('fc-count').textContent = `0 / ${fcData.length} flipped`;
+});
+
+/* ===================== QUIZ BANK ===================== */
+const quizData = [
+  {q:"What directly covers the cytoplasm of a bacterial cell?", opts:["Cytoplasmic membrane","Capsule","Outer membrane","Flagellum"], a:0},
+  {q:"Peptidoglycan is described as THICK in which bacteria?", opts:["Gram-negative","Gram-positive","Acid-fast only","Neither"], a:1},
+  {q:"The periplasmic space and outer membrane surround the peptidoglycan of:", opts:["Gram-positive bacteria","All bacteria equally","Gram-negative bacteria","Spore-formers only"], a:2},
+  {q:"Most bacterial chromosomes exist as:", opts:["Linear double-stranded DNA","A single circular double-stranded DNA","Multiple linear chromosomes","RNA only"], a:1},
+  {q:"Plasmids are best described as:", opts:["Essential nuclear DNA","Non-essential extra-chromosomal DNA, often carrying resistance genes","Part of the cell wall","Ribosomal RNA units"], a:1},
+  {q:"Which structure's main function is 'anti-phagocytic'?", opts:["Pili","Flagellum","Capsule","Ribosome"], a:2},
+  {q:"Lipoteichoic acid is a component of which cell type, and acts as:", opts:["Gram-negative; barrier protection","Gram-positive; activator of innate host protection","Gram-negative; anti-phagocytic","Gram-positive; movement"], a:1},
+  {q:"LPS (lipopolysaccharide) provides outer membrane structure and barrier protection in:", opts:["Gram-positive bacteria","Gram-negative bacteria","Fungi","Spores"], a:1},
+  {q:"Pili are mainly responsible for:", opts:["Movement and chemotaxis","Adherence and acting as sex pili","Energy generation","DNA replication"], a:1},
+  {q:"Biofilm's main role is to:", opts:["Generate ATP","Protect the colony from the environment and antimicrobials","Transfer genes by viruses","Cause cell death"], a:1},
+  {q:"Which bacteria possess an outer membrane?", opts:["Gram-positive only","Gram-negative only","Both equally","Neither"], a:1},
+  {q:"Which group is generally MORE susceptible to penicillin?", opts:["Gram-negative","Gram-positive","Spore-formers","Acid-fast bacteria"], a:1},
+  {q:"Which group is generally MORE resistant to lysozyme?", opts:["Gram-positive","Gram-negative","Both equally sensitive","Neither"], a:1},
+  {q:"Endotoxin activity is associated with:", opts:["Gram-positive peptidoglycan","Gram-negative LPS","Capsules only","Flagella only"], a:1},
+  {q:"Which type of cell division does NOT use a spindle fiber apparatus?", opts:["Mitosis","Meiosis","Binary fission","Budding in eukaryotes"], a:2},
+  {q:"During binary fission, before the septum forms, the cell:", opts:["Shrinks and loses DNA","Doubles in size and replicates its chromosome","Forms a bud","Absorbs foreign DNA"], a:1},
+  {q:"Which reproduction method forms a bubble-like growth that separates from the parent cell?", opts:["Binary fission","Conjugation","Budding","Transduction"], a:2},
+  {q:"Transfer of genetic material between bacteria by cell-to-cell contact through sex pili is:", opts:["Transformation","Transduction","Conjugation","Budding"], a:2},
+  {q:"Absorption of a free DNA segment from the surrounding medium is:", opts:["Conjugation","Transformation","Transduction","Binary fission"], a:1},
+  {q:"Transfer of foreign genes by means of a virus is called:", opts:["Conjugation","Transformation","Transduction","Sporulation"], a:2},
+  {q:"In which growth phase does cell number stay the same while metabolic activity is high?", opts:["Log phase","Lag phase","Stationary phase","Death phase"], a:1},
+  {q:"Exponential increase in bacterial numbers happens in the:", opts:["Lag phase","Log phase","Stationary phase","Death phase"], a:1},
+  {q:"Log-phase growth eventually slows mainly because of:", opts:["Excess oxygen","Nutrient depletion, waste build-up, and oxygen loss","Too much moisture","UV exposure"], a:1},
+  {q:"In the stationary phase, cell number:", opts:["Rises exponentially","Stops increasing while cells change internally","Drops to zero immediately","Doubles every generation"], a:1},
+  {q:"Entry into the stationary phase is signaled mainly by:", opts:["Fresh nutrient supply","Overcrowding and metabolic by-product build-up","Low temperature","High pH only"], a:1},
+  {q:"In the death phase, cells die mainly because of:", opts:["Loss of intracellular ATP","Excess plasmids","Too much DNA replication","Spindle fiber failure"], a:0},
+  {q:"Bacteria that grow best at pH 1–5.4 are called:", opts:["Neutrophiles","Alkaliphiles","Acidophiles","Mesophiles"], a:2},
+  {q:"Lactobacillus, which ferments milk, is a classic example of:", opts:["Alkaliphile","Acidophile","Thermophile","Obligate anaerobe"], a:1},
+  {q:"Most bacteria that cause human disease grow best at pH:", opts:["1.0–4.0","5.4–8.5","9.0–11.5","Below 1.0"], a:1},
+  {q:"Vibrio cholerae, the cause of cholera, grows best in bacteria classified as:", opts:["Acidophiles","Neutrophiles","Alkaliphiles","Psychrophiles"], a:2},
+  {q:"Bacteria with an optimum of 15–20°C (some growing at 0°C) are:", opts:["Mesophiles","Psychrophiles","Thermophiles","Hyperthermophiles"], a:1},
+  {q:"Human pathogens, growing best at 25–40°C (body temp 37°C), are classified as:", opts:["Psychrophiles","Mesophiles","Thermophiles","Hyperthermophiles"], a:1},
+  {q:"Bacteria found in boiling hot springs, optimum 50–60°C, are:", opts:["Mesophiles","Psychrophiles","Thermophiles","Acidophiles"], a:2},
+  {q:"Bacteria with an optimum temperature above 80°C are called:", opts:["Thermophiles","Hyperthermophiles","Mesophiles","Neutrophiles"], a:1},
+  {q:"Mycobacterium tuberculosis, which requires oxygen for its ATP-generating system, is a(n):", opts:["Obligate anaerobe","Facultative anaerobe","Obligate aerobe","Microaerophile"], a:2},
+  {q:"Escherichia coli, which respires with O2 but ferments without it, is classified as:", opts:["Obligate aerobe","Facultative anaerobe","Obligate anaerobe","Microaerophile"], a:1},
+  {q:"Neisseria meningitidis, which cannot grow in the presence of oxygen, is a(n):", opts:["Obligate aerobe","Facultative anaerobe","Obligate anaerobe","Microaerophile"], a:2},
+  {q:"Campylobacter species, which grow best at a low oxygen concentration, are:", opts:["Obligate aerobes","Microaerophilic","Obligate anaerobes","Facultative anaerobes"], a:1},
+  {q:"Which structures alone can survive a dry, stationary environment?", opts:["Ribosomes","Spores","Plasmids","Flagella"], a:1},
+  {q:"UV and gamma radiation mainly damage bacteria by:", opts:["Destroying the capsule only","Causing mutations in DNA (and can kill the cell)", "Increasing plasmid number","Triggering budding"], a:1},
+  {q:"Autotrophic bacteria obtain their carbon mainly from:", opts:["Organic sugars","Carbon dioxide","Amino acids only","Vitamins"], a:1},
+  {q:"Heterotrophic (parasitic) bacteria obtain carbon and energy mainly from:", opts:["Carbon dioxide","Complex organic substances such as sugars","Nitrogen gas","Water only"], a:1},
+  {q:"Along with hydrogen, which element (essential for growth) is obtained from water?", opts:["Oxygen","Sulphur","Phosphate","Potassium"], a:0}
+];
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+let score = 0;
+document.getElementById('score-total').textContent = quizData.length;
+
+function renderQuiz(){
+  score = 0;
+  document.getElementById('score-val').textContent = 0;
+  const list = document.getElementById('quiz-list');
+  list.innerHTML = '';
+  quizData.forEach((q,qi)=>{
+    const correctText = q.opts[q.a];
+    const shuffled = shuffle(q.opts.map((text,i)=>({text, correct:i===q.a})));
+
+    const card = document.createElement('div');
+    card.className='qcard';
+    const qn = document.createElement('div');
+    qn.className='qn mono';
+    qn.textContent = `QUESTION ${qi+1} / ${quizData.length}`;
+    const qtext = document.createElement('div');
+    qtext.className='qtext';
+    qtext.textContent = q.q;
+    card.appendChild(qn); card.appendChild(qtext);
+
+    shuffled.forEach(opt=>{
+      const b = document.createElement('button');
+      b.className='opt';
+      b.textContent = opt.text;
+      b.addEventListener('click',()=>{
+        const allOpts = card.querySelectorAll('.opt');
+        allOpts.forEach(o=>o.classList.add('disabled'));
+        allOpts.forEach(o=>{
+          if(o.textContent===correctText) o.classList.add('correct');
+        });
+        if(opt.correct){
+          score++;
+        } else {
+          b.classList.add('wrong');
+        }
+        document.getElementById('score-val').textContent = score;
+      });
+      card.appendChild(b);
+    });
+    list.appendChild(card);
+  });
+}
+renderQuiz();
+document.getElementById('quiz-reset').addEventListener('click', renderQuiz);
+</script>
+</body>
+</html>
